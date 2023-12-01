@@ -4,7 +4,9 @@ import string
 
 def read_data(filename: str) -> list[str]:
     path = os.path.dirname(__file__)
-    with open(os.path.join(path, os.path.pardir, "data", filename)) as fh:
+    with open(
+        os.path.join(path, os.path.pardir, os.path.pardir, "data", filename)
+    ) as fh:
         return fh.read().split("\n")
 
 
