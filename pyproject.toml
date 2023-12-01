@@ -4,11 +4,14 @@ version = "0.1.0"
 description = ""
 authors = ["Steve Marin <steve.marin@gmail.com>"]
 readme = "README.md"
+packages = [{ include = "advent-of-code-2023" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 mypy = "^1.7.1"
 ruff = "^0.1.6"
+black = "^23.11.0"
+isort = "^5.12.0"
 
 [build-system]
 requires = ["poetry-core"]
