@@ -1,7 +1,7 @@
 
-all: black ruff isort
+.PHONY: ruff black isort
 
-.PHONY: ruff black
+all: black ruff isort
 
 black:
 	black .
