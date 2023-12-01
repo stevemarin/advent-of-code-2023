@@ -1,10 +1,11 @@
-
-import os.path
 import string
+from os.path import join
+
+from aoc2023 import DATA_DIR
+
 
 def read_data(filename: str) -> list[str]:
-    path = os.path.dirname(__file__)
-    with open(os.path.join(path, os.path.pardir, "data", filename)) as fh:
+    with open(join(DATA_DIR, filename)) as fh:
         return fh.read().split("\n")
 
 
@@ -27,7 +28,6 @@ def part2(filename) -> int:
 
     digits = []
     for line in data:
-
         if line == "":
             continue
 
@@ -61,7 +61,7 @@ def part2(filename) -> int:
             elif c == "n":
                 if idx + 4 <= current_length and line[idx : idx + 4] == "nine":
                     current_digits.append(9)
-                        
+
         digits.append(int(f"{current_digits[0]}{current_digits[-1]}"))
 
     return sum(digits)
