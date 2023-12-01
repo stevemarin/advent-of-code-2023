@@ -1,10 +1,11 @@
-import os.path
 import string
+from os.path import join
+
+from aoc2023 import DATA_DIR
 
 
 def read_data(filename: str) -> list[str]:
-    path = os.path.dirname(__file__)
-    with open(os.path.join(path, os.path.pardir, "data", filename)) as fh:
+    with open(join(DATA_DIR, filename)) as fh:
         return fh.read().split("\n")
 
 
