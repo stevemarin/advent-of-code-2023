@@ -111,6 +111,7 @@ mod tests {
     fn test_part1() {
         assert!(part1("day01_part1_sample.txt") == 142);
         assert!(part1("day01.txt") == 54968);
+        
     }
 
     #[test]
