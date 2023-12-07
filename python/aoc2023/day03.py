@@ -87,7 +87,10 @@ class Gear:
         if abs(number.row - self.row) > 1:
             return False
         elif (
-            min(abs(number.col - self.col), abs(number.col + number.length - self.col - 1))
+            min(
+                abs(number.col - self.col),
+                abs(number.col + number.length - self.col - 1),
+            )
             > 1
         ):
             return False

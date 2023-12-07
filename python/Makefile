@@ -1,7 +1,7 @@
 
 .PHONY: ruff black isort
 
-all: black ruff isort
+default: black ruff isort
 
 black:
 	black .
@@ -17,3 +17,9 @@ day01:
 
 day02:
 	python ./aoc2023/day02.py
+
+day03:
+	python ./aoc2023/day03.py
+
+all:
+	find ./aoc2023 -name "day*.py" -exec python {} \;
