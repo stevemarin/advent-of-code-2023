@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from os.path import join
 from string import digits
 
-from __init__ import DATA_DIR
+from aoc2023 import DATA_DIR
 
 DIGITS = frozenset(digits)
 DIGITS_DOT = frozenset(digits + ".")

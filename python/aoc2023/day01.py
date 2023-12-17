@@ -1,7 +1,7 @@
 import string
 from os.path import join
 
-from __init__ import DATA_DIR
+from aoc2023 import DATA_DIR
 
 
 def read_data(filename: str) -> list[str]:

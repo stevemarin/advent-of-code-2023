@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from os.path import join
 
-from __init__ import DATA_DIR
+from aoc2023 import DATA_DIR
 
 
 @dataclass

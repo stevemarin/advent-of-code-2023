@@ -1,5 +1,5 @@
 
-.PHONY: ruff black isort
+.PHONY: ruff black isort all_days day
 
 default: black ruff isort
 
@@ -12,14 +12,9 @@ ruff:
 isort:
 	isort ./aoc2023
 
-day01:
-	python ./aoc2023/day01.py
-
-day02:
-	python ./aoc2023/day02.py
-
-day03:
-	python ./aoc2023/day03.py
-
-all:
+all_days:
 	find ./aoc2023 -name "day*.py" -exec python {} \;
+	
+day:
+	python ./aoc2023/day${day}.py
+
