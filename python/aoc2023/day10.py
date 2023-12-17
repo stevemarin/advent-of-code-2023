@@ -142,3 +142,4 @@ if __name__ == "__main__":
     assert part1("day10_sample1.txt", "F") == 4
     assert part1("day10_sample2.txt", "F") == 8
     assert part1("day10.txt", "|") == 6786
+
