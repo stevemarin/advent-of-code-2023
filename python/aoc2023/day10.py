@@ -1,7 +1,3 @@
-# in sample1, S = F
-# in sample2, S = F
-# in real data, S = |
-
 from array import array
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -72,7 +68,6 @@ def populate_moves():
         "J": move_J,
         "7": move_7,
         "F": move_F,
-        ".": NotImplementedError("how'd you get to a dot?"),
     }
 
 
@@ -83,31 +78,21 @@ class Map:
     start_location: int
     current_location: int
     map_: array
-    prev: Direction
+    prev_dir: Direction
     moves: dict[str, MoveFn] = field(default_factory=populate_moves)
 
     def move(self) -> None:
         pipe = self.map_[self.current_location]
-        print("AAA", pipe)
-        self.prev, offset = self.moves[pipe](self.prev, self.num_cols)
+        self.prev_dir, offset = self.moves[pipe](self.prev_dir, self.num_cols)
         self.current_location += offset
 
-        print(
-            f"Moving from {self.prev} to index {self.current_location} x {pipe}, {offset}"
-        )
-
-    def do_loop(self, steps: int | None = None) -> int:
-        self.move()
-
-        counter = 1
-        while self.current_location != self.start_location:
+    def do_loop(self) -> list[int]:
+        locations: list[int] = []
+        while self.current_location != self.start_location or len(locations) == 0:
             self.move()
-            counter += 1
+            locations.append(self.current_location)
 
-            if steps is not None and steps == counter:
-                break
-
-        return counter
+        return locations
 
 
 def read_data(filename: str, replacement: str) -> Map:
@@ -120,8 +105,6 @@ def read_data(filename: str, replacement: str) -> Map:
     cols = len(lines[0])
     map_ = array("u", "".join("".join(line) for line in lines))
 
-    print("BBB", "".join("".join(line) for line in lines))
-
     start_location = map_.index("S")
     map_[start_location] = replacement
 
@@ -132,13 +115,67 @@ def read_data(filename: str, replacement: str) -> Map:
 
 def part1(filename: str, replacement: str) -> int:
     the_map = read_data(filename, replacement)
-    loop_length = the_map.do_loop()
+    locations = the_map.do_loop()
 
-    print("loop length", loop_length)
-    return loop_length // 2
+    return len(locations) // 2
+
+
+def shoelace(coordinates: list[int], num_cols: int) -> int:
+    # given (x, y) coordinates, the shoelace formula calculates the area
+    # note that this is AREA not number of interior points
+    sum_ = 0
+    x2, y2 = divmod(coordinates[0], num_cols)
+    for p2 in coordinates[1:] + coordinates[0:1]:
+        x1, y1 = x2, y2
+        x2, y2 = divmod(p2, num_cols)
+        sum_ += (x1 * y2) - (x2 * y1)
+
+    int_sum = abs(sum_ // 2)
+
+    assert int_sum == abs(sum_ / 2)
+
+    return int_sum
+
+
+def inverse_picks(area: float, num_external_points: int) -> int:
+    # pick's theorem states that the area of a simple (non-self-intersecting)
+    # polygon where the x, y indices are all integers (and including all
+    # integer x,y points on the boundary):
+    #
+    # Area = internal_points + external_points / 2 - 1
+    #
+    # shoeloace formula gives us the area, problem formulation makes sure
+    # all boundary points have integer x, y parts, so picks just gives
+    # the number of integer x, y points inside, which is the solution
+    num_internal_points = area + 1 - (num_external_points / 2)
+    assert num_internal_points == int(num_internal_points)
+    return int(num_internal_points)
+
+
+def part2(filename: str, replacement: str):
+    the_map = read_data(filename, replacement)
+    locations = the_map.do_loop()
+    area = shoelace(locations, the_map.num_cols)
+    return inverse_picks(area, len(locations))
 
 
 if __name__ == "__main__":
+    # in sample1, S = F
+    # in sample2, S = F
+    # in sample2, S = F
+    # in sample2, S = F
+    # in sample2, S = F
+    # in sample2, S = 7
+    # in real data, S = |
+
     assert part1("day10_sample1.txt", "F") == 4
     assert part1("day10_sample2.txt", "F") == 8
     assert part1("day10.txt", "|") == 6786
+
+    assert part2("day10_sample1.txt", "F") == 1
+    assert part2("day10_sample2.txt", "F") == 1
+    assert part2("day10_sample3.txt", "F") == 4
+    assert part2("day10_sample4.txt", "F") == 4
+    assert part2("day10_sample5.txt", "F") == 8
+    assert part2("day10_sample6.txt", "7") == 10
+    assert part2("day10.txt", "|") == 495
