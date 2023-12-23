@@ -38,7 +38,7 @@ def part1(filename: str) -> int:
                 if check_symmetry(map_rows, row_idx):
                     sum_ += (row_idx + 1) * 100
                     break
-                        
+
         for col_idx, (col, next_col) in enumerate(pairwise(map_cols)):
             if col == next_col:
                 if check_symmetry(map_cols, col_idx):
@@ -74,7 +74,7 @@ def part2(filename: str) -> int:
 
         for col_idx in range(len(map_cols) - 1):
             if exactly_1_difference(map_cols, col_idx):
-                sum_ += (col_idx + 1)
+                sum_ += col_idx + 1
 
     return sum_
 
