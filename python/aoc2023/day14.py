@@ -146,8 +146,9 @@ def part2(filename: str) -> None:
         for idx, row in enumerate(arr.iterrows()):
             load += (len(row) - idx) * row.count("O")
         print(cycle, load)
-    
+
     # visually inspect output to get cycle parameters
+
 
 if __name__ == "__main__":
     assert part1("day14_sample.txt") == 136
@@ -156,9 +157,10 @@ if __name__ == "__main__":
     # inspection used to get cycle parameters
     # part2("day14_sample.txt")
 
+    desired_cycle_count = 1000000000
     cycle = [69, 69, 65, 64, 65, 63, 68]
     cycle_burn_in = 3
-    assert cycle[(1000000000 - cycle_burn_in) % len(cycle)] == 64
+    assert cycle[(desired_cycle_count - cycle_burn_in) % len(cycle)] == 64
 
     # inspection used to get cycle parameters
     # part2("day14.txt")
@@ -195,4 +197,4 @@ if __name__ == "__main__":
         104640,
     ]
 
-    assert cycle[(1000000000 - cycle_burn_in) % len(cycle)] == 104619
+    assert cycle[(desired_cycle_count - cycle_burn_in) % len(cycle)] == 104619
