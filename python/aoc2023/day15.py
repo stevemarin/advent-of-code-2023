@@ -40,21 +40,21 @@ def part2(filename: str) -> int:
         labels = box_labels[box_idx]
         lenses = box_lenses[box_idx]
 
-        if replacement_lens is None: # it's a - operation
+        if replacement_lens is None:  # it's a - operation
             try:
                 label_idx = labels.index(label)
                 labels.pop(label_idx)
                 lenses.pop(label_idx)
             except ValueError:
                 continue
-        else: # it's a + operation
-            try: # label exists
+        else:  # it's a + operation
+            try:  # label exists
                 label_idx = labels.index(label)
                 lenses[label_idx] = replacement_lens
-            except ValueError: # label doesn't exist
+            except ValueError:  # label doesn't exist
                 labels.append(label)
                 lenses.append(replacement_lens)
-        
+
     sum_ = 0
     for box_idx, lenses in enumerate(box_lenses):
         for lens_idx, lens in enumerate(lenses):
