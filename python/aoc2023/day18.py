@@ -16,7 +16,7 @@ class Direction(StrEnum):
 class Step:
     direction: Direction
     distance: int
-    color: int
+    color: str
 
 
 def read_input(filename: str) -> list[Step]:
@@ -25,39 +25,16 @@ def read_input(filename: str) -> list[Step]:
 
     steps: list[Step] = []
     for line in lines:
-        print(line)
         direction_str, distance_str, col_str = line.split()
         steps.append(
             Step(
                 Direction._value2member_map_[direction_str],  # type: ignore
                 int(distance_str),
-                int(col_str[2:-1], base=16),
+                col_str[2:-1],
             )
         )
 
     return steps
-
-
-def get_extremes(steps: list[Step]) -> tuple[int, int, int, int]:
-    x, y = 0, 0
-    minx, maxx, miny, maxy = 0, 0, 0, 0
-
-    for step in steps:
-        match step.direction:
-            case Direction.Up:
-                y += step.distance
-                maxy = max(y, maxy)
-            case Direction.Down:
-                y -= step.distance
-                miny = min(y, miny)
-            case Direction.Right:
-                x += step.distance
-                maxx = max(x, maxx)
-            case Direction.Left:
-                x -= step.distance
-                minx = min(x, minx)
-
-    return minx, maxx - minx, miny, maxy - miny
 
 
 def get_coords(steps: list[Step]) -> list[tuple[int, int]]:
@@ -84,7 +61,7 @@ def shoelace(coordinates: list[tuple[int, int]]) -> int:
     # note that this is AREA not number of interior points
     sum_ = 0
     x1, y1 = coordinates[0][0], coordinates[0][1]
-    for x2, y2 in coordinates[1:] + coordinates[0:1]:
+    for x2, y2 in coordinates[1:]:
         sum_ += (x1 * y2) - (x2 * y1)
         x1, y1 = x2, y2
 
@@ -110,34 +87,32 @@ def inverse_picks(area: int, num_external_points: int) -> int:
     return int(num_internal_points)
 
 
-if __name__ == "__main__":
-    steps = read_input("day18_sample.txt")
+def part1(filename: str) -> int:
+    steps = read_input(filename)
     coords = get_coords(steps)
     shoelace_area = shoelace(coords)
     num_external_points = sum([step.distance for step in steps])
     area = inverse_picks(shoelace_area, num_external_points)
-    print(shoelace_area, area, num_external_points)
+    return area + num_external_points
 
-    minx, xrange, miny, yrange = get_extremes(steps)
-    # coords = [(x - minx, y - miny) for x, y in coords]
 
-    for coord in coords:
-        print(coord)
+def part2(filename: str) -> int:
+    dirs = (Direction.Right, Direction.Down, Direction.Left, Direction.Up)
+    steps = [
+        Step(dirs[int(step.color[-1], base=16) % 4], int(step.color[:5], base=16), "")
+        for step in read_input(filename)
+    ]
 
-    grid = [["."] * 40 for _ in range(40)]
-    for coord in get_coords(steps):
-        grid[coord[1] + 20][coord[0] + 20] = "#"
+    coords = get_coords(steps)
+    shoelace_area = shoelace(coords)
+    num_external_points = sum([step.distance for step in steps])
+    area = inverse_picks(shoelace_area, num_external_points)
+    return area + num_external_points
 
-    for row in grid:
-        print("".join(row))
 
-    for coord in coords:
-        print(coord)
-    print(xrange, yrange)
+if __name__ == "__main__":
+    assert part1("day18_sample.txt") == 62
+    assert part1("day18.txt") == 68115
 
-    # steps = read_input("day18.txt")
-    # coords = get_coords(steps)
-    # shoelace_area = shoelace(coords)
-    # num_external_points = sum([step.distance for step in steps])
-    # area = inverse_picks(shoelace_area, num_external_points)
-    # print(shoelace_area, area, num_external_points)
+    assert part2("day18_sample.txt") == 952408144115
+    assert part2("day18.txt") == 71262565063800
