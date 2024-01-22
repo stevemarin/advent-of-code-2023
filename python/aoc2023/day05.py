@@ -1,83 +1,8 @@
 from dataclasses import dataclass
 from itertools import batched
 from os.path import join
-from typing import Any
 
-from aoc2023 import DATA_DIR
-
-
-@dataclass
-class Range:
-    start: int
-    end: int
-
-    def __post_init__(self):
-        # assert ranges are increasing
-        if self.end < self.start:
-            self.start, self.end = self.end, self.start
-
-    def intersection(self, other: "Range") -> "Range | None":
-        if not self.intersects(other):
-            return None
-
-        return Range(max(self.start, other.start), min(self.end, other.end))
-
-    def intersects(self, other: "Range") -> bool:
-        if self.start > other.end or self.end < other.start:
-            return False
-        else:
-            return True
-
-    def split_after(self, value: int) -> list["Range"]:
-        if value not in self:
-            raise ValueError("cannot split with external point")
-        return [Range(self.start, value), Range(value + 1, self.end)]
-
-    def contains(self, other: "Range") -> bool:
-        return other.start >= self.start and other.end <= self.end
-
-    def shift_by(self, value: int) -> "Range":
-        return Range(self.start + value, self.end + value)
-
-    def __contains__(self, value: int) -> bool:
-        return self.start <= value <= self.end
-
-    def __add__(self, other: "Range") -> list["Range"]:
-        if self.intersects(other):
-            return [Range(min(self.start, other.start), max(self.end, other.end))]
-        elif self.start < other.start:
-            return [self, other]
-        else:
-            return [other, self]
-
-    def __sub__(self, other: "Range") -> list["Range"] | None:
-        intersection = self.intersection(other)
-        if intersection is None:
-            return [self]
-        elif intersection == self:
-            return None
-        elif intersection.start == self.start:
-            return [Range(intersection.end, self.end)]
-        elif intersection.end == self.end:
-            return [Range(self.start, intersection.start)]
-        else:
-            return [
-                Range(self.start, intersection.start),
-                Range(intersection.end, self.end),
-            ]
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, Range):
-            return self.start == other.start and self.end == other.end
-        else:
-            raise NotImplementedError("cannot equate Range with another type")
-
-    def __ne__(self, other: Any) -> bool:
-        return not self.__eq__(other)
-
-    def __len__(self) -> int:
-        return self.end - self.start
-
+from aoc2023 import DATA_DIR, Range
 
 Shifted = Range | None
 Unshifted = Range | None
