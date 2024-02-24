@@ -5,3 +5,12 @@ __pycache__
 .mypy_cache
 
 target
+
+.vscode
+
+.calva
+.clj-kondo
+.joyride
+.lsp
+
+a.out

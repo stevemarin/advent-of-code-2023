@@ -20,6 +20,9 @@ class NDArray[T: str | int | float]:
             idx += self.num_cols
         return "\n".join(lines)
 
+    def typecode(self) -> str:
+        return self._data.typecode
+
     def __getitem__(self, item: int) -> T:
         return self._data[item]
 
@@ -82,9 +85,14 @@ class NDArray[T: str | int | float]:
         ).transpose()
 
     def idx_to_row_col(self, idx: int) -> tuple[int, int]:
-        return divmod(idx, self.num_cols)
+        row, col = divmod(idx, self.num_cols)
+        assert 0 <= row <= self.num_rows
+        assert 0 <= col <= self.num_cols
+        return row, col
 
     def row_col_to_idx(self, row: int, col: int) -> int:
+        assert 0 <= row < self.num_rows
+        assert 0 <= col < self.num_cols
         return row * self.num_cols + col
 
 
@@ -164,37 +172,3 @@ class Range:
     def __iter__(self) -> Iterable[int]:
         for _ in range(self.start, self.end):
             yield _
-
-
-# @dataclass
-# class NDRange:
-#     ranges: list[Range]
-
-#     def intersection(self: Self, other: Self) -> Self | None:
-#         self_labels = [r.label for r in self.ranges]
-#         other_labels = [r.label for r in other.ranges]
-#         assert self_labels == other_labels
-
-#         ranges = []
-#         for self_range, other_range in zip(self.ranges, other.ranges):
-#             range_ = self_range.intersection(other_range)
-#             if range_ is None:
-#                 return None
-#             else:
-#                 range_.label = self_range.label
-#                 ranges.append(range_)
-
-#         return NDRange(ranges)
-
-#     def union(self: Self, other: Self) -> [NDRange]:
-#         pass
-
-
-# if __name__ == "__main__":
-#     a = NDRange([Range(2, 3, "x"), Range(0, 3, "y")])
-#     b = NDRange([Range(0, 3, "x"), Range(2, 4, "y")])
-#     i = NDRange([Range(2, 3, "x"), Range(2, 3, "y")])
-#     u = NDRange([Range(0, 3, "x"), Range(0, 4, "y")])
-
-#     assert a.intersection(b) == i
-#     assert a.union(b) == u
