@@ -1,6 +1,6 @@
 use std::{char, fs};
 
-fn read_input<'a>(filename: &str) -> Vec<char> {
+fn read_input(filename: &str) -> Vec<char> {
     let data_path = format!("../data/{}", filename);
     let input = fs::read(data_path).expect("cannot read file");
     let input: Vec<char> = input.into_iter().map(|x| x as char).collect();
@@ -8,11 +8,7 @@ fn read_input<'a>(filename: &str) -> Vec<char> {
 }
 
 fn extract_digits_part1(chars: &[char]) -> i32 {
-    let x: Vec<char> = chars
-        .iter()
-        .filter(|x| x.is_ascii_digit())
-        .map(|&x| x as char)
-        .collect();
+    let x: Vec<&char> = chars.iter().filter(|x| (x.is_ascii_digit())).collect();
 
     let s = format!("{}{}", x.first().unwrap(), x.last().unwrap());
     s.parse::<i32>().unwrap()
@@ -22,9 +18,8 @@ pub fn part1(filename: &str) -> i32 {
     let input = read_input(filename);
     input
         .split(|&x| x == '\n')
-        .into_iter()
         .map(|x| match x {
-            l if l.len() == 0 => 0 as i32,
+            [] => 0_i32,
             l => extract_digits_part1(l),
         })
         .sum()
@@ -33,35 +28,30 @@ pub fn part1(filename: &str) -> i32 {
 fn extract_digits_part2(chars: &[char]) -> i32 {
     let num_chars = chars.len();
     let digits: Vec<Option<i32>> = chars
-        .into_iter()
+        .iter()
         .enumerate()
         .map(|(idx, c)| match c {
-            &c if c.is_ascii_digit() => {
-                let chr = c as char;
-                let d = chr.to_digit(10);
-                match d {
-                    None => None,
-                    Some(x) => Some(x as i32),
-                }
+            c if c.is_ascii_digit() => {
+                let d: Option<u32> = c.to_digit(10);
+                d.map(|x| x as i32)
             }
-            &c if c == 'o' => {
+            'o' => {
                 if (idx + 3 <= num_chars) && chars[idx..idx + 3] == ['o', 'n', 'e'] {
                     Some(1)
                 } else {
                     None
                 }
             }
-            &c if c == 't' => {
+            't' => {
                 if (idx + 3 <= num_chars) && chars[idx..idx + 3] == ['t', 'w', 'o'] {
                     Some(2)
-                } else if (idx + 5 <= num_chars) && chars[idx..idx + 5] == ['t', 'h', 'r', 'e', 'e']
-                {
+                } else if (idx + 5 <= num_chars) && chars[idx..idx + 5] == ['t', 'h', 'r', 'e', 'e'] {
                     Some(3)
                 } else {
                     None
                 }
             }
-            &c if c == 'f' => {
+            'f' => {
                 if (idx + 4 <= num_chars) && chars[idx..idx + 4] == ['f', 'o', 'u', 'r'] {
                     Some(4)
                 } else if (idx + 4 <= num_chars) && chars[idx..idx + 4] == ['f', 'i', 'v', 'e'] {
@@ -70,24 +60,23 @@ fn extract_digits_part2(chars: &[char]) -> i32 {
                     None
                 }
             }
-            &c if c == 's' => {
+            's' => {
                 if (idx + 3 <= num_chars) && chars[idx..idx + 3] == ['s', 'i', 'x'] {
                     Some(6)
-                } else if (idx + 5 <= num_chars) && chars[idx..idx + 5] == ['s', 'e', 'v', 'e', 'n']
-                {
+                } else if (idx + 5 <= num_chars) && chars[idx..idx + 5] == ['s', 'e', 'v', 'e', 'n'] {
                     Some(7)
                 } else {
                     None
                 }
             }
-            &c if c == 'e' => {
+            'e' => {
                 if (idx + 5 <= num_chars) && chars[idx..idx + 5] == ['e', 'i', 'g', 'h', 't'] {
                     Some(8)
                 } else {
                     None
                 }
             }
-            &c if c == 'n' => {
+            'n' => {
                 if (idx + 4 <= num_chars) && chars[idx..idx + 4] == ['n', 'i', 'n', 'e'] {
                     Some(9)
                 } else {
@@ -112,9 +101,8 @@ pub fn part2(filename: &str) -> i32 {
     let input = read_input(filename);
     input
         .split(|&x| x == '\n')
-        .into_iter()
         .map(|x| match x {
-            l if l.len() == 0 => 0 as i32,
+            [] => 0_i32,
             l => extract_digits_part2(l),
         })
         .sum()

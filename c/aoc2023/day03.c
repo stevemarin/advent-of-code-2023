@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 
 //
@@ -42,34 +43,18 @@ Shape Shape_from_file(FILE *fh) {
 size_t Shape_num_elements(Shape shape) { return shape.rows * shape.cols; }
 
 //
-// dynamic array stuff
+// Number struct stuff
 //
+typedef struct Number {
+  Shape start;
+  size_t length;
+  size_t value;
+} Number;
 
-// typedef struct {
-//   Shape *data;
-//   size_t used;
-//   size_t size;
-// } Array;
-
-// void Array_init(Array *arr, size_t num) {
-//   arr->data = malloc(num * sizeof(Shape));
-//   arr->used = 0;
-//   arr->size = num;
-// }
-
-// void Array_insert(Array *arr, Shape shape) {
-//   if (arr->used == arr->size) {
-//     arr->size *= 2;
-//     arr->data = realloc(arr->data, arr->size * sizeof(Shape));
-//   }
-//   arr->data[arr->used++] = shape;
-// }
-
-// void Array_free(Array *arr) {
-//   free(arr->data);
-//   arr->data = NULL;
-//   arr->used = arr->size = 0;
-// }
+void Number_print(Number const *const number) {
+  printf("Number: value: %zu, shape: row=%zu, col=%zu, length: %zu",
+         number->value, number->start.rows, number->start.cols, number->length);
+}
 
 //
 // Matrix struct stuff
@@ -80,14 +65,14 @@ typedef struct Matrix {
   size_t *strides;
 } Matrix;
 
-size_t Matrix_element_from_Shape(Matrix const* const matrix, Shape shape) {
+size_t Matrix_element_from_Shape(Matrix const *const matrix, Shape shape) {
   return (*matrix).shape.cols * shape.rows + shape.cols;
 }
 
 Shape Matrix_idx_to_coords(Matrix const *const matrix, size_t idx) {
   size_t col = idx % (*matrix).shape.rows;
   size_t row = (idx - col) / (*matrix).shape.cols;
-  Shape shape = {.rows=row, .cols=col};
+  Shape shape = {.rows = row, .cols = col};
   return shape;
 }
 
@@ -149,20 +134,59 @@ int main() {
   Matrix matrix = Matrix_init_from_file(fh);
   Matrix_print(matrix);
 
-  size_t num_locations = 0;
+  size_t num_symbols = 0;
   Shape symbol_locations[1024] = {0};
+
   for (size_t idx = 0; idx < Shape_num_elements(matrix.shape); idx++) {
     char c = matrix.data[idx];
-    printf("c: %c\n", c);
     if ((c < '0' || c > '9') && c != '.') {
-      symbol_locations[num_locations++] = Matrix_idx_to_coords(&matrix, idx);
+      symbol_locations[num_symbols++] = Matrix_idx_to_coords(&matrix, idx);
     }
   }
 
-  printf("Num Locations: %zu\n", num_locations);
-  for (size_t idx = 0; idx < num_locations; idx++) {
+  printf("\nNum Symbols: %zu\n", num_symbols);
+  for (size_t idx = 0; idx < num_symbols; idx++) {
     Shape shape = symbol_locations[idx];
     printf("Shape: row=%zu, col=%zu\n", shape.rows, shape.cols);
+  }
+
+  size_t num_numbers = 0;
+  Number numbers[1024] = {0};
+
+  for (size_t idx = 0; idx < Shape_num_elements(matrix.shape); idx++) {
+    char c = matrix.data[idx];
+
+    u_int8_t number_length = 0;
+    Shape number_start;
+    bool first_number = true;
+
+    while ('0' <= c && c <= '9') {
+      if (first_number) {
+        number_start = Matrix_idx_to_coords(&matrix, idx);
+        first_number = false;
+      }
+      c = matrix.data[idx + ++number_length];
+    }
+
+    if (number_length > 0) {
+      char *buffer[5] = {0};
+      memcpy(buffer, &matrix.data[idx], number_length);
+      size_t value = atol((char *)&buffer);
+      
+      Number number = {.start = number_start, .length = number_length, .value = value};
+      numbers[num_numbers++] = number;
+
+      idx += number_length;
+      number_length = 0;
+      first_number = true;
+    }
+  }
+
+  printf("\nNum Numbers: %zu\n", num_numbers);
+  for (size_t idx = 0; idx < num_numbers; idx++) {
+    Number const *const num = &numbers[idx];
+    Number_print(num);
+    printf("\n");
   }
 
   Matrix_free(&matrix);

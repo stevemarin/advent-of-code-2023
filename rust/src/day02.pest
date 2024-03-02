@@ -1,0 +1,6 @@
+color = { ("red" | "green" | "blue") }
+number = { (ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*) }
+number_and_color = { number ~ " " ~ color }
+pull = { number_and_color ~ (", " ~ number_and_color)*}
+game = { "Game " ~ number ~ ": " ~ pull ~ ("; " ~ pull)* }
+file = { SOI ~ (game ~ NEWLINE)+ ~ EOI }
