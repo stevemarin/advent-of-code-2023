@@ -79,8 +79,6 @@ pub fn part2(filename: &str) -> Result<usize, ParseIntError> {
         sum += current_num_cards;
     }
 
-    println!("NUM_CARDS: {num_cards:?}");
-
     Ok(sum)
 }
 
